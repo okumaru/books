@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('desc')->nullable();
-            $table->integer('parent')->nullable();
+            $table->integer('parent')->nullable()->default(0);
             $table->timestamps();
         });
     }

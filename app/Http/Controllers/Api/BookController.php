@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\book;
+
 class BookController extends Controller
 {
     /**
@@ -26,8 +28,17 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        echo "add book";
+        $data = json_decode($request->getContent(), true);
+        $book = book::create([
+            'title' => $data['title'],
+            'desc' => $data['desc'],
+            'keywords' => $data['keywords'],
+            'price' => $data['price'],
+            'stock' => $data['stock'],
+            'publisher' => $data['publisher'],
+        ]);
+
+        return response()->json($book);
     }
 
     /**

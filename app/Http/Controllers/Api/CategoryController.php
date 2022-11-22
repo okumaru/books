@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\category;
+
 class CategoryController extends Controller
 {
     /**
@@ -26,8 +28,14 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        echo "add cat";
+        $data = json_decode($request->getContent(), true);
+        $category = category::create([
+            'name' => $data['name'],
+            'desc' => $data['desc'],
+            'parent' => $data['parent']
+        ]);
+
+        return response()->json($category);
     }
 
     /**
