@@ -17,6 +17,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/book', function () {
-    echo "list books";
-});
+Route::get('/book', [App\Http\Controllers\BookController::class, 'index']);
+Route::get('/category', [App\Http\Controllers\CategoryController::class, 'index']);
+
+// Route::get('/{any?}', [
+//     function () {
+//         return view('welcome');
+//     }
+// ])->where('any', '.*');

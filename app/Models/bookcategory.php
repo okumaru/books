@@ -15,4 +15,14 @@ class bookcategory extends Model
      * @var string
      */
     protected $table = 'bookcategories';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'book_id',
+        'category_id',
+    ];
 }

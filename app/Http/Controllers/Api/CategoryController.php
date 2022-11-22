@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\category;
 
@@ -16,8 +17,20 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
-        echo "cat pagination";
+        $limit = 10;
+        $onpage = $_GET['page'];
+        $doskip = ($onpage - 1) * $limit;
+
+        $cat = DB::table('categories');
+
+        if (isset($_GET['name']))
+            $cat->where('name', $_GET['name']);
+
+        if (isset($_GET['desc']))
+            $cat->where('desc', $_GET['desc']);
+
+        $datacats = $cat->skip($doskip)->take($limit)->get()->toArray();
+        return response()->json($datacats);
     }
 
     /**
@@ -46,8 +59,8 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        //
-        echo "one cat";
+        $category = category::where('id', $id)->first();
+        return response()->json($category);
     }
 
     /**
@@ -59,8 +72,10 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-        echo "update cat";
+        $data = json_decode($request->getContent(), true);
+        category::where('id', $id)->update($data);
+
+        return response()->json('success update category with id: ' . $id);
     }
 
     /**
@@ -71,7 +86,7 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        //
-        echo "delete cat";
+        category::where('id', $id)->delete();
+        return response()->json('success delete category with id: ' . $id);
     }
 }
