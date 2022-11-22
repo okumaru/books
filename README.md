@@ -16,6 +16,8 @@ DB_PASSWORD=jagoan123
 php artisan migrate
 ```
 
+other option, file dump on `database/schema/mysql-schema.dump`
+
 3. Install dependencies
 
 ```
