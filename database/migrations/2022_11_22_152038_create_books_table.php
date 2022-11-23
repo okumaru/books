@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+use App\Models\Publisher;
+
 return new class extends Migration
 {
     /**
@@ -13,11 +15,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('books', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('desc')->nullable();
-            $table->integer('parent')->nullable()->default(0);
+            $table->string('title');
+            $table->string('description')->nullable();
+            $table->integer('price');
+            $table->integer('stock')->nullable();
+            $table->foreignIdFor(Publisher::class);
             $table->timestamps();
         });
     }
@@ -29,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('books');
     }
 };

@@ -6,12 +6,67 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-use App\Models\book;
-use App\Models\bookcategory;
-use App\Models\category;
+use App\Models\Publisher;
+use App\Models\Book;
+use App\Models\Category;
+use App\Models\Keyword;
 
 class BookController extends Controller
 {
+
+    private String $title;
+
+    private Int $price;
+
+    private String $desc;
+
+    private Int $stock;
+
+    private String $publisher;
+
+    private array $arrcats;
+
+    private array $arrkeys;
+
+    private array $mcats;
+
+    private array $mkeys;
+
+    private function setParams(array $params)
+    {
+        $this->title = $params['title'];
+        $this->price = $params['price'];
+        $this->desc = $params['desc'] ?? '';
+        $this->stock = $params['stock'] ?? 0;
+        $this->publisher = $params['publisher'];
+        $this->arrcats = isset($params['categories']) ? explode(',', $params['categories']) : [];
+        $this->arrkeys = isset($params['keywords']) ? explode(',', $params['keywords']) : [];
+    }
+
+    private function setMCats()
+    {
+        $dataCats = array_unique($this->arrcats);
+        $this->mcats = array_map(function ($cat) {
+            $catModel = new Category();
+            $catModel->name = $cat;
+            $catModel->description = '';
+            $catModel->parent_id = 0;
+
+            return $catModel;
+        }, $dataCats);
+    }
+
+    private function setMKeys()
+    {
+        $dataKeys = array_unique($this->arrkeys);
+        $this->mkeys = array_map(function ($key) {
+            $keyModel = new Keyword();
+            $keyModel->name = $key;
+
+            return $keyModel;
+        }, $dataKeys);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -72,24 +127,31 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $data = json_decode($request->getContent(), true);
-        $book = book::create([
-            'title' => $data['title'],
-            'desc' => $data['desc'],
-            'keywords' => $data['keywords'],
-            'price' => $data['price'],
-            'stock' => $data['stock'],
-            'publisher' => $data['publisher'],
-        ]);
+        $reqdata = $request->json()->all();
 
-        foreach ($data['cat'] as $cat) {
-            bookcategory::create([
-                'book_id' => $book->id,
-                'category_id' => $cat,
-            ]);
-        }
+        $this->setParams($reqdata);
 
-        return response()->json($book);
+        # Set data category model
+        $this->setMCats();
+
+        # Set data keys model
+        $this->setMKeys();
+
+        # get first or insert data publisher
+        $datapublisher = Publisher::firstOrCreate(['name' => $this->publisher]);
+
+        $book = new Book();
+        $book->title = $this->title;
+        $book->description = $this->desc;
+        $book->price = $this->price;
+        $book->stock = $this->stock;
+        $book->publisher()->associate($datapublisher); # append data publisher to book
+        $book->save();
+
+        $book->categories()->saveMany($this->mcats); # add data categories with book_id from data book
+        $book->keywords()->saveMany($this->mkeys); # add data keywords with book_id from data book
+
+        return response()->json('Success add book.');
     }
 
     /**
