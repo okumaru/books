@@ -17,11 +17,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/book', [App\Http\Controllers\BookController::class, 'index']);
-Route::get('/category', [App\Http\Controllers\CategoryController::class, 'index']);
+Route::get('/book', App\Http\Livewire\ShowBook::class);
 
-// Route::get('/{any?}', [
-//     function () {
-//         return view('welcome');
-//     }
-// ])->where('any', '.*');
+// Route::get('/book', [App\Http\Controllers\BookController::class, 'index']);
+// Route::get('/category', [App\Http\Controllers\CategoryController::class, 'index']);

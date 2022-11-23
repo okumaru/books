@@ -168,7 +168,6 @@ class BookController extends Controller
     {
         $reqdata = $request->json()->all();
 
-        #
         # get first or insert data publisher
         $datapublisher = Publisher::firstOrCreate(['name' => $reqdata['publisher']]);
 
@@ -176,8 +175,8 @@ class BookController extends Controller
         $book->publisher()->associate($datapublisher); # append data publisher to book
         $book->update($reqdata);
 
-        #
         # Manipulate data categories to add and delete
+        # Start!
         $cats = isset($reqdata['categories']) ? explode(',', $reqdata['categories']) : [];
         $unicats = array_unique($cats);
         $bookcats = $book->categories()->get();

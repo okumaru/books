@@ -26,10 +26,10 @@ Route::prefix('/book')->group(function () {
     Route::delete('/{id}', [App\Http\Controllers\Api\BookController::class, 'destroy']);
 });
 
-Route::prefix('/category')->group(function () {
-    Route::get('/', [App\Http\Controllers\Api\CategoryController::class, 'index']);
-    Route::get('/{id}', [App\Http\Controllers\Api\CategoryController::class, 'show']);
-    Route::put('/', [App\Http\Controllers\Api\CategoryController::class, 'store']);
-    Route::post('/{id}', [App\Http\Controllers\Api\CategoryController::class, 'update']);
-    Route::delete('/{id}', [App\Http\Controllers\Api\CategoryController::class, 'destroy']);
-});
+// Route::prefix('/category')->group(function () {
+//     Route::get('/', [App\Http\Controllers\Api\CategoryController::class, 'index']);
+//     Route::get('/{id}', [App\Http\Controllers\Api\CategoryController::class, 'show']);
+//     Route::put('/', [App\Http\Controllers\Api\CategoryController::class, 'store']);
+//     Route::post('/{id}', [App\Http\Controllers\Api\CategoryController::class, 'update']);
+//     Route::delete('/{id}', [App\Http\Controllers\Api\CategoryController::class, 'destroy']);
+// });
