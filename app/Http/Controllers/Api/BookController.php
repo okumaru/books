@@ -162,7 +162,7 @@ class BookController extends Controller
      */
     public function show($id)
     {
-        $book = book::where('id', $id)->first();
+        $book = book::find($id);
         return response()->json($book);
     }
 
@@ -189,7 +189,11 @@ class BookController extends Controller
      */
     public function destroy($id)
     {
-        book::where('id', $id)->delete();
-        return response()->json('success delete book with id: ' . $id);
+        $book = Book::find($id);
+        $book->categories()->delete();
+        $book->keywords()->delete();
+        $book->delete();
+
+        return response()->json('Success delete book.');
     }
 }
