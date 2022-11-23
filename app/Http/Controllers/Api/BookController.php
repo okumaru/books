@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 use App\Models\Publisher;
 use App\Models\Book;
@@ -150,7 +149,11 @@ class BookController extends Controller
      */
     public function show($id)
     {
-        $book = book::find($id);
+        $book = Book::with([
+            'categories',
+            'keywords',
+            'publisher'
+        ])->where('id', $id)->first();
         return response()->json($book);
     }
 
@@ -163,8 +166,59 @@ class BookController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = json_decode($request->getContent(), true);
-        book::where('id', $id)->update($data);
+        $reqdata = $request->json()->all();
+
+        #
+        # get first or insert data publisher
+        $datapublisher = Publisher::firstOrCreate(['name' => $reqdata['publisher']]);
+
+        $book = Book::find($id);
+        $book->publisher()->associate($datapublisher); # append data publisher to book
+        $book->update($reqdata);
+
+        #
+        # Manipulate data categories to add and delete
+        $cats = isset($reqdata['categories']) ? explode(',', $reqdata['categories']) : [];
+        $unicats = array_unique($cats);
+        $bookcats = $book->categories()->get();
+
+        # Delete categories if not in params categories
+        $bookcats->each(function ($cat) use ($unicats) {
+            if (!in_array($cat->name, $unicats)) $cat->delete();
+        });
+
+        # Add new cats if not exist
+        $arrbookcats = array_column($bookcats->toArray(), 'name');
+        $this->arrcats = array_filter($unicats, function ($cat) use ($arrbookcats) {
+            return !in_array($cat, $arrbookcats);
+        });
+        $this->setMCats();
+        $book->categories()->saveMany($this->mcats);
+        # 
+        # Finish!
+        # 
+
+        # Manipulate data keywords to add and delete
+        # Start!
+        $keys = isset($reqdata['keywords']) ? explode(',', $reqdata['keywords']) : [];
+        $unikeys = array_unique($keys);
+        $bookkeys = $book->keywords()->get();
+
+        # Delete keywords if not in params keywords
+        $bookkeys->each(function ($key) use ($unikeys) {
+            if (!in_array($key->name, $unikeys)) $key->delete();
+        });
+
+        # Add new keywords if not exist
+        $arrbookkeys = array_column($bookkeys->toArray(), 'name');
+        $this->arrkeys = array_filter($unikeys, function ($key) use ($arrbookkeys) {
+            return !in_array($key, $arrbookkeys);
+        });
+        $this->setMKeys();
+        $book->keywords()->saveMany($this->mkeys);
+        #
+        # Finish!
+        #
 
         return response()->json('success update book with id: ' . $id);
     }
