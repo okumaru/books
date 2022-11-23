@@ -75,46 +75,34 @@ class BookController extends Controller
     public function index(Request $request)
     {
 
-        $limit = 10;
-        $onpage = $_GET['page'];
-        $doskip = ($onpage - 1) * $limit;
+        $limit = 5;
+        $reqdata = $request->json()->all();
 
-        $book = DB::table('books');
+        $book = Book::with([
+            'categories',
+            'keywords',
+            'publisher'
+        ]);
 
-        if (isset($_GET['title']))
-            $book->where('title', $_GET['title']);
+        if (isset($reqdata['title']))
+            $book->where('title', $reqdata['title']);
 
-        if (isset($_GET['desc']))
-            $book->where('desc', 'like', "%{$_GET['desc']}%");
+        if (isset($reqdata['desc']))
+            $book->where('desc', 'like', "%{$reqdata['desc']}%");
 
-        if (isset($_GET['keyword']))
-            $book->where('keywords', 'like', "%{$_GET['keywords']}%");
+        if (isset($reqdata['price']))
+            $book->where('price', $reqdata['price']);
 
-        if (isset($_GET['price']))
-            $book->where('price', $_GET['price']);
+        if (isset($reqdata['cat']))
+            $book->whereRelation('categories', 'name', $reqdata['cat']);
 
-        if (isset($_GET['publisher']))
-            $book->where('publisher', $_GET['publisher']);
+        if (isset($reqdata['key']))
+            $book->whereRelation('keywords', 'name', $reqdata['key']);
 
-        $databooks = $book->skip($doskip)->take($limit)->get()->toArray();
+        if (isset($reqdata['publisher']))
+            $book->whereRelation('publisher', 'name', $reqdata['publisher']);
 
-        array_map(function ($book) {
-            $book->cats = DB::table('bookcategories')
-                ->join('categories', 'categories.id', '=', 'bookcategories.category_id')
-                ->where('bookcategories.book_id', $book->id)
-                ->get()->toArray();
-        }, $databooks);
-
-        if (isset($_GET['cat'])) {
-            $cat = $_GET['cat'];
-            $databooks = array_filter($databooks, function ($book) use ($cat) {
-                if (empty($book->cats)) return false;
-                $arrcats = json_decode(json_encode($book->cats), true);
-                $catnames = array_column($arrcats, 'name');
-
-                return in_array($cat, $catnames);
-            });
-        }
+        $databooks = $book->paginate($limit);
 
         return response()->json($databooks);
     }
