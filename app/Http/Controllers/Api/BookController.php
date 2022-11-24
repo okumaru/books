@@ -87,7 +87,7 @@ class BookController extends Controller
             $book->where('title', $reqdata['title']);
 
         if (isset($reqdata['desc']))
-            $book->where('desc', 'like', "%{$reqdata['desc']}%");
+            $book->where('description', 'like', "%{$reqdata['desc']}%");
 
         if (isset($reqdata['price']))
             $book->where('price', $reqdata['price']);
