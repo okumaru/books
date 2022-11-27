@@ -1,6 +1,6 @@
 ## Getting Started
 
-1. Change database configuration on file `.env`
+1. Setup database configuration on file `.env`
 
 ```env
 DB_HOST=127.0.0.1
@@ -15,8 +15,6 @@ DB_PASSWORD=jagoan123
 ```cmd
 php artisan migrate
 ```
-
-other option, file dump on `database/schema/mysql-schema.dump`
 
 3. Install dependencies
 
@@ -45,32 +43,20 @@ npm run dev
 on this page, have function.
 
 1. list books
-2. search books
-3. delete multiple books
-4. view detail book
-5. edit book
-6. delete one book
+2. create book
+3. search book
+4. delete multiple books
+5. view detail book
+6. edit book
+7. delete book
 
-#### Interface Category
-
-`GET` localhost:8000/category
-
-on this page, have function.
-
-1. list categorys
-2. search categorys
-3. delete multiple categorys
-4. view detail category
-5. edit category
-6. delete one category
-
-## About API Application
+## About API
 
 #### Book
 
-1. Get all books
+1. Get books
 
-`GET` localhost:8000/api/book
+`POST` localhost:8000/api/book
 
 ```
 {
@@ -83,7 +69,7 @@ on this page, have function.
 }
 ```
 
-1. Get one book
+2. Get one book
 
 `GET` localhost:8000/api/book/{:id}
 
@@ -103,7 +89,7 @@ on this page, have function.
 }
 ```
 
-4. Get update book
+4. Update book
 
 `POST` localhost:8000/api/book/{:id}
 
@@ -118,50 +104,6 @@ on this page, have function.
 }
 ```
 
-1. Get delete book
+5. Delete book
 
-`DELET` localhost:8000/api/book/{:id}
-
-#### Category
-
-1. Get all categories
-
-`GET` localhost:8000/api/book
-
-```
-{
-  "name": "name",
-  "desc": "desc"
-}
-```
-
-2. Get one category
-
-`GET` localhost:8000/api/book/{:id}
-
-3. Add category
-
-`PUT` localhost:8000/api/book
-
-```
-{
-  "name": "name",
-  "desc": "desc",
-  "parent": "parent"
-}
-```
-
-1. Get update category
-
-`POST` localhost:8000/api/book/{:id}
-
-```
-{
-  "name": "name",
-  "desc": "desc"
-}
-```
-
-1. Get delete category
-
-`DELET` localhost:8000/api/book/{:id}
+`DELETE` localhost:8000/api/book/{:id}
